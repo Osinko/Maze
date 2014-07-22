@@ -3,8 +3,7 @@ using System.Collections;
 
 public class Maze : MonoBehaviour
 {
-
-		public int sizeX, sizeZ;
+		public IntVector2 size;
 		public MazeCell cellPrefab;
 		MazeCell[,] cells;
 
@@ -23,21 +22,21 @@ public class Maze : MonoBehaviour
 		public IEnumerator Generate ()
 		{
 				WaitForSeconds delay = new WaitForSeconds (generationStepDelay);
-				cells = new MazeCell[sizeX, sizeZ];
-				for (int x = 0; x < sizeX; x++) {
-						for (int z = 0; z < sizeZ; z++) {
+				cells = new MazeCell[size.x, size.z];
+				for (int x = 0; x < size.x; x++) {
+						for (int z = 0; z < size.z; z++) {
 								yield return delay;
-								CreateCell (x, z);
+								CreateCell (new IntVector2 (x, z));
 						}
 				}
 		}
 
-		void CreateCell (int x, int z)
+		void CreateCell (IntVector2 coordinates)
 		{
 				MazeCell newCell = Instantiate (cellPrefab) as MazeCell;
-				cells [x, z] = newCell;
-				newCell.name = "Maze Cell " + x + ", " + z;
+				cells [coordinates.x, coordinates.z] = newCell;
+				newCell.name = "Maze Cell " + coordinates.x + ", " + coordinates.z;
 				newCell.transform.parent = transform;
-				newCell.transform.localPosition = new Vector3 (x - sizeX * 0.5f + 0.5f, 0, z - sizeZ * 0.5f + 0.5f);
+				newCell.transform.localPosition = new Vector3 (coordinates.x - size.x * 0.5f + 0.5f, 0, coordinates.z - size.z * 0.5f + 0.5f);
 		}
 }
