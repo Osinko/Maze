@@ -36,8 +36,8 @@ public class Maze : MonoBehaviour
 				int currentIndex = activeCells.Count - 1;				//リストの後ろから
 				MazeCell currentCell = activeCells [currentIndex];
 
-				if (currentCell.IsFullyInitialized) {
-						activeCells.RemoveAt (currentIndex);
+				if (currentCell.IsFullyInitialized) {					//４方向の情報が揃っていた場合
+						activeCells.RemoveAt (currentIndex);			//アクティブセルから外す
 						return;
 				}
 

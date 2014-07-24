@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-
 public class MazeCell : MonoBehaviour
 {
 		//セルの座標
@@ -10,32 +9,38 @@ public class MazeCell : MonoBehaviour
 		//４辺のエッジの状態
 		MazeCellEdge[] edges = new MazeCellEdge[MazeDirections.count];
 
+		//指定した方向のエッジを取得
 		public MazeCellEdge GetEdge (MazeDirection direction)
 		{
 				return edges [(int)direction];
 		}
 
+		//初期化済のエッジ数
 		int initializedEdgeCount;
 
+		//４辺の情報が集まって充分データーが成長したかどうか
 		public bool IsFullyInitialized {
 				get {
 						return initializedEdgeCount == MazeDirections.count;
 				}
 		}
 
+		//当セルの指定方向のエッジにwallかpassageのエッジをセット
 		public void SetEdge (MazeDirection direction, MazeCellEdge edge)
 		{
 				edges [(int)direction] = edge;
 				initializedEdgeCount += 1;
 		}
 
+		//空きのあるエッジの方向をランダムで返す
 		public MazeDirection RandomUninitializedDirection {
 				get {
+						//初期化されていない残りのエッジ数を上限としてランダムな値を返す
 						int skips = Random.Range (0, MazeDirections.count - initializedEdgeCount);
 						for (int i = 0; i < MazeDirections.count; i++) {
 								if (edges [i] == null) {
 										if (skips == 0) {
-												return (MazeDirection)i;
+												return (MazeDirection)i;	//上記で生成したランダムな値にしたがって残りのエッジ方向を返す
 										}
 										skips -= 1;
 								}
