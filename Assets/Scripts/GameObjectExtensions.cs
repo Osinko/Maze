@@ -23,7 +23,33 @@ public struct IntVector2
 				a.z += b.z;
 				return a;
 		}
-	
+
+		// <summary>
+		// 範囲内であるか調べます。範囲内であればtrueを返す
+		// </summary>
+		// <param name="a">調べたい値</param>
+		// <param name="b">範囲を指定する値</param>
+		public static bool Contains (IntVector2 value, IntVector2 range)
+		{
+				return value.x >= 0 && value.x < range.x && value.z >= 0 && value.z < range.z;
+		}
+
+		public  bool Contains (IntVector2 range)
+		{
+				return this.x >= 0 && this.x < range.x && this.z >= 0 && this.z < range.z;
+		}
+
+
+
+		/// <summary>
+		/// 乱数を返す
+		/// </summary>
+		/// <returns>IntVector2</returns>
+		/// <param name="max">乱数の最大値</param>
+		public static IntVector2 RandomVector (IntVector2 max)
+		{
+				return new IntVector2 (UnityEngine.Random.Range (0, max.x), UnityEngine.Random.Range (0, max.z));
+		}
 }
 
 
@@ -124,8 +150,6 @@ public static partial class TransformExtensions
 				return 0 < transform.childCount;
 		}
 }
-
-
 
 
 /// <summary>
@@ -306,7 +330,6 @@ public static partial class IListExtensions
 				return self [UnityEngine.Random.Range (0, self.Count)];
 		}
 }
-
 
 
 /// <summary>

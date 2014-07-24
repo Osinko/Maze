@@ -1,0 +1,9 @@
+call5
+call4
+call3
+call2
+call1
+run 2= 2
+run 3= 6
+run 4= 24
+run 5= 120
