@@ -36,10 +36,53 @@ public class Maze : MonoBehaviour
 				activeCells.Add (CreateCell (IntVector2.RandomVector (size)));
 		}
 
+
+		//追加、アルゴリズムの選択コード
+		public enum ChangeAlgorithm
+		{
+				First,
+				Mid,
+				Last,
+				Rand,
+		}
+
+		public ChangeAlgorithm changeAlgorithm;
+
+		delegate int FunctionDelegate (List<MazeCell> activeCells);
+		static FunctionDelegate[] Func = {
+			First,
+			Mid,
+			Last,
+			Rand
+		};
+
+		static int First (List<MazeCell> activeCells)
+		{
+				return 0;
+		}
+
+		static int Mid (List<MazeCell> activeCells)
+		{
+				return activeCells.Count / 2;
+		}
+
+		static int Last (List<MazeCell> activeCells)
+		{
+				return activeCells.Count - 1;
+		}
+
+		static int Rand (List<MazeCell> activeCells)
+		{
+				return Random.Range (0, activeCells.Count - 1);
+		}
+
 		//迷路の成長
 		void DoNextGenerationStep (List<MazeCell> activeCells)
 		{
-				int currentIndex = activeCells.Count - 1;				//リストの後ろから
+				FunctionDelegate f = Func [(int)changeAlgorithm];
+
+				int currentIndex = f (activeCells);				//リストの後ろから
+				//int currentIndex = activeCells.Count - 1;				//リストの後ろから
 				MazeCell currentCell = activeCells [currentIndex];
 
 				if (currentCell.IsFullyInitialized) {					//４方向の情報が揃っていた場合
