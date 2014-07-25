@@ -25,14 +25,14 @@ public class MazeCell : MonoBehaviour
 				}
 		}
 
-		//当セルの指定方向のエッジにwallかpassageのエッジをセット
+		//当セルの指定方向のエッジにMazeCellEdgをセット
 		public void SetEdge (MazeDirection direction, MazeCellEdge edge)
 		{
 				edges [(int)direction] = edge;
 				initializedEdgeCount += 1;
 		}
 
-		//空きのあるエッジの方向をランダムで返す
+		//まだ初期化されていないエッジの方向をランダムで返す
 		public MazeDirection RandomUninitializedDirection {
 				get {
 						//初期化されていない残りのエッジ数を上限としてランダムな値を返す

@@ -12,7 +12,10 @@ public class Maze : MonoBehaviour
 		MazeCell[,] cells;
 
 		public float generationStepDelay;	//遅延時間
+		
+		//MazeCell[] test;	//Debug用
 
+		//ここからすべてを生成している
 		public IEnumerator Generate ()
 		{
 				WaitForSeconds delay = new WaitForSeconds (generationStepDelay);
@@ -21,16 +24,19 @@ public class Maze : MonoBehaviour
 				DoFirstGenerationStep (activeCells);
 				
 				while (activeCells.Count >0) {
+						//test = activeCells.ToArray ();	//Debug用
 						yield return delay;
 						DoNextGenerationStep (activeCells);
 				}
 		}
 
+		//起源
 		void DoFirstGenerationStep (List<MazeCell> activeCells)
 		{
 				activeCells.Add (CreateCell (IntVector2.RandomVector (size)));
 		}
 
+		//迷路の成長
 		void DoNextGenerationStep (List<MazeCell> activeCells)
 		{
 				int currentIndex = activeCells.Count - 1;				//リストの後ろから
@@ -38,44 +44,45 @@ public class Maze : MonoBehaviour
 
 				if (currentCell.IsFullyInitialized) {					//４方向の情報が揃っていた場合
 						activeCells.RemoveAt (currentIndex);			//アクティブセルから外す
-						return;
+						return;											//反対に４方向が埋まっていないセルなら、そこから迷路が成長を始める
 				}
 
-				MazeDirection direction = currentCell.RandomUninitializedDirection;
+				MazeDirection direction = currentCell.RandomUninitializedDirection;		//空きのあるエッジをランダムで探し進行方向を得る
 				IntVector2 coordinates = currentCell.coordinates + direction.ToIntVector ();
-				if (coordinates.Contains (size)) {
-						MazeCell neighbor = GetCell (coordinates);
+				if (coordinates.Contains (size)) {						//迷路の端をこえているかどうか？
+						MazeCell neighbor = GetCell (coordinates);		//進行方向先のセルを取得
 						if (neighbor == null) {
-								neighbor = CreateCell (coordinates);
-								CreatePassage (currentCell, neighbor, direction);
-								activeCells.Add (neighbor);
+								neighbor = CreateCell (coordinates);	//なかったら進行方向先にセルを作って
+								CreatePassage (currentCell, neighbor, direction);	//まず通路を作る
+								activeCells.Add (neighbor);				//アクティブリストに登録
 						} else {
-								CreateWall (currentCell, neighbor, direction);	//生産力を失うと同時に壁になる
+								CreateWall (currentCell, neighbor, direction);
 						}
 				} else {
-						CreateWall (currentCell, null, direction);	//指定された範囲外は全て外壁になる
+						CreateWall (currentCell, null, direction);	//迷路の端をこえていたら全て外壁になる
 				}
 		}
 
+		//通路の作成	
 		void CreatePassage (MazeCell cell, MazeCell otherCell, MazeDirection direction)
 		{
-				MazePassage passage = Instantiate (passagePrefab) as MazePassage;
+				MazePassage passage = Instantiate (passagePrefab) as MazePassage;	//カレントセルにpassagePrefabを作成
 				passage.Initialize (cell, otherCell, direction);
-				passage = Instantiate (passagePrefab) as MazePassage;
-				passage.Initialize (otherCell, cell, direction.GetOpposite ());	//otherCellとcellが入れ替わっている点に注意
+				passage = Instantiate (passagePrefab) as MazePassage;				//進行方向位置にpassagePrefabを作成
+				passage.Initialize (otherCell, cell, direction.GetOpposite ());		//進入方向にエッジの方向を定め方向を反転
 		}
 
 		void CreateWall (MazeCell cell, MazeCell otherCell, MazeDirection direction)
 		{
-				MazeWall wall = Instantiate (wallPrefab) as MazeWall;
+				MazeWall wall = Instantiate (wallPrefab) as MazeWall;	//カレントセルにwallPrefabを作成
 				wall.Initialize (cell, otherCell, direction);
-				if (otherCell != null) {
-						wall = Instantiate (wallPrefab) as MazeWall;
-						wall.Initialize (otherCell, cell, direction.GetOpposite ());
+				if (otherCell != null) {								//nullは迷路の外壁を意味する。外壁の場合は進行方向に作成しない
+						wall = Instantiate (wallPrefab) as MazeWall;	//進行方向にwallPrefabを作成
+						wall.Initialize (otherCell, cell, direction.GetOpposite ());	//進入方向にエッジの方向を定め方向を反転
 				}
 		}
 
-
+		//指定した座標のセルを得る
 		public MazeCell GetCell (IntVector2 coordinates)
 		{
 				return cells [coordinates.x, coordinates.z];
