@@ -80,6 +80,15 @@ public class Maze : MonoBehaviour
 				return Random.Range (0, activeCells.Count - 1);
 		}
 
+		void CreatePassageInSameRoom (MazeCell cell, MazeCell otherCell, MazeDirection direction)
+		{
+				MazePassage passage = Instantiate (passagePrefab) as MazePassage;
+				passage.Initialize (cell, otherCell, direction);
+				passage = Instantiate (passagePrefab) as MazePassage;
+				passage.Initialize (otherCell, cell, direction.GetOpposite ());
+		}
+
+
 		//迷路の成長
 		void DoNextGenerationStep (List<MazeCell> activeCells)
 		{
@@ -100,8 +109,10 @@ public class Maze : MonoBehaviour
 						MazeCell neighbor = GetCell (coordinates);		//進行方向先のセルを取得
 						if (neighbor == null) {
 								neighbor = CreateCell (coordinates);	//なかったら進行方向先にセルを作って
-								CreatePassage (currentCell, neighbor, direction);	//まず通路を作る
+								CreatePassage (currentCell, neighbor, direction);	//まず通路かドアを作る
 								activeCells.Add (neighbor);				//隣接セルをアクティブリストに登録
+						} else if (currentCell.room == neighbor.room) {
+								CreatePassageInSameRoom (currentCell, neighbor, direction);
 						} else {
 								CreateWall (currentCell, neighbor, direction);
 						}
@@ -120,9 +131,9 @@ public class Maze : MonoBehaviour
 		void CreatePassage (MazeCell cell, MazeCell otherCell, MazeDirection direction)
 		{
 				MazePassage prefab = Random.value < doorProbavility ? doorPrefab : passagePrefab;	//ランダムで通路かドアプレハブを生成
-				MazePassage passage = Instantiate (prefab) as MazePassage;	//カレントセルにpassagePrefabを作成
+				MazePassage passage = Instantiate (prefab) as MazePassage;	//カレントセルに作成
 				passage.Initialize (cell, otherCell, direction);
-				passage = Instantiate (prefab) as MazePassage;				//進行方向位置にpassagePrefabを作成
+				passage = Instantiate (prefab) as MazePassage;				//進行方向位置に作成
 
 				//部屋はドアを契機として変更している
 				//otherCellなので進行方向先のセルからMazeRoomを変更している
