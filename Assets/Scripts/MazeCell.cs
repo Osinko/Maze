@@ -49,7 +49,7 @@ public class MazeCell : MonoBehaviour
 				}
 		}
 
-		public MazeRoom room;
+		public MazeRoom room;	//下記のルームとは別の物
 
 		//ルーム関連の初期化
 		public void Initialize (MazeRoom room)

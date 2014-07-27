@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MazeWall : MazeCellEdge
 {
-		public Transform wall;
+		public Transform wall;	//自分自身の壁オブジェクトを指定する
 
 		public override void Initialize (MazeCell cell, MazeCell otherCell, MazeDirection direction)
 		{

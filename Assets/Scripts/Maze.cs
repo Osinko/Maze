@@ -127,9 +127,9 @@ public class Maze : MonoBehaviour
 				//部屋はドアを契機として変更している
 				//otherCellなので進行方向先のセルからMazeRoomを変更している
 				if (passage is MazeDoor) {												//もし生成したものがドアなら
-						otherCell.Initialize (CreateRoom (cell.room.settingsIndex));	//そこから別の部屋として初期化
+						otherCell.Initialize (CreateRoom (cell.room.settingsIndex));	//そこから別の部屋として初期化（現在のセルが所属する部屋は除外される）
 				} else {
-						otherCell.Initialize (cell.room);								//いままでの部屋として初期化
+						otherCell.Initialize (cell.room);								//自セルが属する部屋に設定。つまり今までの部屋と同じとして初期化
 				}
 
 				passage.Initialize (otherCell, cell, direction.GetOpposite ());		//進入方向にエッジの方向を定め方向を反転
@@ -146,7 +146,7 @@ public class Maze : MonoBehaviour
 				}
 		}
 
-		//スクリプタブルオブジェクトのリスト
+		//部屋の島のリスト
 		List<MazeRoom> rooms = new List<MazeRoom> ();
 
 		//部屋の作成
@@ -159,7 +159,7 @@ public class Maze : MonoBehaviour
 						newRoom.settingsIndex = (newRoom.settingsIndex + 1) % roomSetting.Length;
 				}
 				newRoom.settings = roomSetting [newRoom.settingsIndex];	//色を実装
-				rooms.Add (newRoom);	//部屋を登録
+				rooms.Add (newRoom);	//部屋の島を登録
 				return newRoom;
 		}
 
