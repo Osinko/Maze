@@ -48,4 +48,14 @@ public class MazeCell : MonoBehaviour
 						throw new System.InvalidOperationException ("MazeCell has no uninitialized directions left.");
 				}
 		}
+
+		public MazeRoom room;
+
+		//ルーム関連の初期化
+		public void Initialize (MazeRoom room)
+		{
+				room.Add (this);
+				transform.GetChild (0).GetComponent<Renderer> ().material = room.settings.floorMaterial;	//最初の子オブジェクトのマテリアルを変更
+		}
 }
+

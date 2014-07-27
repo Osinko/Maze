@@ -2,7 +2,10 @@ fileFormatVersion: 2
 guid: 744338fb954818a48bc35ccab147f71d
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - cell: {instanceID: 0}
+  - otherCell: {instanceID: 0}
+  - wall: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

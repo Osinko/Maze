@@ -3,16 +3,11 @@ using System.Collections;
 
 public class MazeWall : MazeCellEdge
 {
+		public Transform wall;
 
-		// Use this for initialization
-		void Start ()
+		public override void Initialize (MazeCell cell, MazeCell otherCell, MazeDirection direction)
 		{
-	
-		}
-	
-		// Update is called once per frame
-		void Update ()
-		{
-	
+				base.Initialize (cell, otherCell, direction);
+				wall.GetComponent<Renderer> ().material = cell.room.settings.wallMaterial;	//そのセルのMazeRoomに割り当てられている色を拾ってくる
 		}
 }

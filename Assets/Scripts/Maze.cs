@@ -7,12 +7,14 @@ public class Maze : MonoBehaviour
 		public IntVector2 size;
 		public MazeCell cellPrefab;
 		public MazePassage passagePrefab;	//通路
-		public MazeWall wallPrefab;			//壁
+		public MazeWall[] wallPrefabs;		//壁
 
 		MazeCell[,] cells;
 
 		public float generationStepDelay;	//遅延時間
-		
+
+		public MazeRoomSetting[] roomSetting;
+
 		//MazeCell[] test;	//Debug用
 
 		//ここからすべてを生成している
@@ -33,7 +35,9 @@ public class Maze : MonoBehaviour
 		//起源
 		void DoFirstGenerationStep (List<MazeCell> activeCells)
 		{
-				activeCells.Add (CreateCell (IntVector2.RandomVector (size)));
+				MazeCell newCell = CreateCell (IntVector2.RandomVector (size));
+				newCell.Initialize (CreateRoom (-1));		//除外するインデックスを-1にすることでどんなランダム値でも通る事になりMazeRoomをセルに登録
+				activeCells.Add (newCell);
 		}
 
 
@@ -97,7 +101,7 @@ public class Maze : MonoBehaviour
 						if (neighbor == null) {
 								neighbor = CreateCell (coordinates);	//なかったら進行方向先にセルを作って
 								CreatePassage (currentCell, neighbor, direction);	//まず通路を作る
-								activeCells.Add (neighbor);				//アクティブリストに登録
+								activeCells.Add (neighbor);				//隣接セルをアクティブリストに登録
 						} else {
 								CreateWall (currentCell, neighbor, direction);
 						}
@@ -106,24 +110,61 @@ public class Maze : MonoBehaviour
 				}
 		}
 
+
+		public MazeDoor doorPrefab;
+		[Range(0,1)]
+		public float
+				doorProbavility;
+
 		//通路の作成	
 		void CreatePassage (MazeCell cell, MazeCell otherCell, MazeDirection direction)
 		{
-				MazePassage passage = Instantiate (passagePrefab) as MazePassage;	//カレントセルにpassagePrefabを作成
+				MazePassage prefab = Random.value < doorProbavility ? doorPrefab : passagePrefab;	//ランダムで通路かドアプレハブを生成
+				MazePassage passage = Instantiate (prefab) as MazePassage;	//カレントセルにpassagePrefabを作成
 				passage.Initialize (cell, otherCell, direction);
-				passage = Instantiate (passagePrefab) as MazePassage;				//進行方向位置にpassagePrefabを作成
+				passage = Instantiate (prefab) as MazePassage;				//進行方向位置にpassagePrefabを作成
+
+				//部屋はドアを契機として変更している
+				//otherCellなので進行方向先のセルからMazeRoomを変更している
+				if (passage is MazeDoor) {												//もし生成したものがドアなら
+						otherCell.Initialize (CreateRoom (cell.room.settingsIndex));	//そこから別の部屋として初期化
+				} else {
+						otherCell.Initialize (cell.room);								//いままでの部屋として初期化
+				}
+
 				passage.Initialize (otherCell, cell, direction.GetOpposite ());		//進入方向にエッジの方向を定め方向を反転
 		}
 
+
 		void CreateWall (MazeCell cell, MazeCell otherCell, MazeDirection direction)
 		{
-				MazeWall wall = Instantiate (wallPrefab) as MazeWall;	//カレントセルにwallPrefabを作成
+				MazeWall wall = Instantiate (wallPrefabs [Random.Range (0, wallPrefabs.Length)]) as MazeWall;	//カレントセルにwallPrefabを作成
 				wall.Initialize (cell, otherCell, direction);
 				if (otherCell != null) {								//nullは迷路の外壁を意味する。外壁の場合は進行方向に作成しない
-						wall = Instantiate (wallPrefab) as MazeWall;	//進行方向にwallPrefabを作成
+						wall = Instantiate (wallPrefabs [Random.Range (0, wallPrefabs.Length)]) as MazeWall;	//進行方向にwallPrefabを作成
 						wall.Initialize (otherCell, cell, direction.GetOpposite ());	//進入方向にエッジの方向を定め方向を反転
 				}
 		}
+
+		//スクリプタブルオブジェクトのリスト
+		List<MazeRoom> rooms = new List<MazeRoom> ();
+
+		//部屋の作成
+		MazeRoom CreateRoom (int indexToExclude)	//引数に除外するインデックを指定する
+		{
+				MazeRoom newRoom = ScriptableObject.CreateInstance<MazeRoom> ();
+				newRoom.settingsIndex = Random.Range (0, roomSetting.Length);	//その部屋の色をランダムで決める
+				if (newRoom.settingsIndex == indexToExclude) {
+						//隣の部屋と同じ色設定であったなら１ずらし、上限値をこえたらラッピングする
+						newRoom.settingsIndex = (newRoom.settingsIndex + 1) % roomSetting.Length;
+				}
+				newRoom.settings = roomSetting [newRoom.settingsIndex];	//色を実装
+				rooms.Add (newRoom);	//部屋を登録
+				return newRoom;
+		}
+
+
+
 
 		//指定した座標のセルを得る
 		public MazeCell GetCell (IntVector2 coordinates)
