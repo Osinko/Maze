@@ -1,8 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Maze.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\Logic\Assets\Logic1.cs">
     <Files>
-      <File FileName="Assets\Scripts\Maze.cs" Line="93" Column="8" />
+      <File FileName="..\Logic\Assets\Logic1.cs" Line="97" Column="18" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
